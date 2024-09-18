@@ -1,0 +1,106 @@
+-- Zmienne
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Funkcja do tworzenia prostych animacji (z dołu do góry)
+local function animateGuiInOut(frame, directionIn)
+    frame.Position = UDim2.new(0.5, 0, directionIn and 1 or 0, 0)
+    frame:TweenPosition(UDim2.new(0.5, 0, directionIn and 0 or -1, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
+end
+
+-- Tworzenie ekranu powitalnego
+local welcomeScreen = Instance.new("ScreenGui", playerGui)
+local welcomeText = Instance.new("TextLabel", welcomeScreen)
+welcomeText.Size = UDim2.new(0.5, 0, 0.2, 0)
+welcomeText.Position = UDim2.new(0.25, 0, 0.4, 0)
+welcomeText.Text = "Witaj"
+welcomeText.TextScaled = true
+welcomeText.BackgroundTransparency = 1
+welcomeText.TextTransparency = 0
+welcomeText.TextColor3 = Color3.new(1, 1, 1)
+
+-- Pokazanie powitania z animacją
+animateGuiInOut(welcomeText, true)
+
+-- Po 5 sekundach ukrycie ekranu powitalnego i wyświetlenie zakładek
+wait(5)
+animateGuiInOut(welcomeText, false)
+
+-- Główne GUI
+local mainGui = Instance.new("ScreenGui", playerGui)
+mainGui.Enabled = false -- wyłączony na start
+
+local tabsFrame = Instance.new("Frame", mainGui)
+tabsFrame.Size = UDim2.new(1, 0, 0.1, 0)
+tabsFrame.Position = UDim2.new(0, 0, 0, 0)
+tabsFrame.BackgroundTransparency = 0.5
+tabsFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+
+-- Tworzenie przycisków zakładek
+local tabNames = {"Player", "Universal", "Games"}
+local tabs = {}
+
+for i, name in ipairs(tabNames) do
+    local tabButton = Instance.new("TextButton", tabsFrame)
+    tabButton.Size = UDim2.new(0.3, 0, 1, 0)
+    tabButton.Position = UDim2.new((i - 1) * 0.3, 0, 0, 0)
+    tabButton.Text = name
+    tabButton.TextScaled = true
+    tabButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+    tabButton.MouseButton1Click:Connect(function()
+        -- Włączenie odpowiedniej zakładki
+        for _, tab in pairs(tabs) do
+            tab.Visible = false
+        end
+        tabs[name].Visible = true
+        animateGuiInOut(tabs[name], true)
+    end)
+
+    -- Tworzenie zawartości zakładek
+    local tabContent = Instance.new("Frame", mainGui)
+    tabContent.Size = UDim2.new(1, 0, 0.9, 0)
+    tabContent.Position = UDim2.new(0, 0, 0.1, 0)
+    tabContent.BackgroundTransparency = 0.5
+    tabContent.BackgroundColor3 = Color3.new(0.4, 0.4, 0.4)
+    tabContent.Visible = false -- Wyłączony na start
+    tabs[name] = tabContent
+end
+
+-- Zakładka Player
+local playerTab = tabs["Player"]
+local speedInput = Instance.new("TextBox", playerTab)
+speedInput.Size = UDim2.new(0.3, 0, 0.1, 0)
+speedInput.Position = UDim2.new(0.35, 0, 0.2, 0)
+speedInput.Text = "Enter Speed"
+speedInput.TextScaled = true
+speedInput.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+
+local speedButton = Instance.new("TextButton", playerTab)
+speedButton.Size = UDim2.new(0.3, 0, 0.1, 0)
+speedButton.Position = UDim2.new(0.35, 0, 0.35, 0)
+speedButton.Text = "Set Speed"
+speedButton.TextScaled = true
+speedButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+
+speedButton.MouseButton1Click:Connect(function()
+    local speed = tonumber(speedInput.Text)
+    if speed then
+        player.Character.Humanoid.WalkSpeed = speed
+    end
+end)
+
+-- Zakładki Universal i Games - na razie tylko tekst
+for _, name in ipairs({"Universal", "Games"}) do
+    local tab = tabs[name]
+    local label = Instance.new("TextLabel", tab)
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.Position = UDim2.new(0, 0, 0, 0)
+    label.Text = name .. " content coming soon..."
+    label.TextScaled = true
+    label.BackgroundTransparency = 1
+end
+
+-- Po 5 sekundach włącz GUI i pokaż zakładki
+wait(5)
+mainGui.Enabled = true
+animateGuiInOut(tabsFrame, true)
