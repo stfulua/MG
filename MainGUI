@@ -13,6 +13,20 @@ local function animateGuiInOut(frame, directionIn)
     frame:TweenPosition(UDim2.new(0.5, 0, directionIn and 0 or -1, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
 end
 
+-- Ustawienia języka
+local function getLanguage()
+    local language = player.DataStore:GetAsync("PlayerLanguage") or "en" -- Domyślnie angielski
+    return language
+end
+
+local translations = {
+    ["en"] = {welcome = "Welcome", loading = "Loading... %d/%d", keybind = "Keybind: %s", setKeybind = "Set Keybind", placeholder = "Enter new keybind"},
+    ["pl"] = {welcome = "Witaj", loading = "Ładowanie... %d/%d", keybind = "Keybind: %s", setKeybind = "Ustaw Keybind", placeholder = "Wpisz nowy keybind"}
+}
+
+local language = getLanguage()
+local trans = translations[language] or translations["en"]
+
 -- Tworzenie ekranu powitalnego
 local welcomeScreen = Instance.new("ScreenGui", playerGui)
 local welcomeFrame = Instance.new("Frame", welcomeScreen)
@@ -25,16 +39,15 @@ welcomeFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
 local welcomeText = Instance.new("TextLabel", welcomeFrame)
 welcomeText.Size = UDim2.new(1, 0, 0.6, 0)
 welcomeText.Position = UDim2.new(0, 0, 0, 0)
-welcomeText.Text = "Witaj"
+welcomeText.Text = trans.welcome
 welcomeText.TextScaled = true
 welcomeText.BackgroundTransparency = 1
-welcomeText.TextTransparency = 0
 welcomeText.TextColor3 = Color3.new(1, 1, 1)
 
 local loadingText = Instance.new("TextLabel", welcomeFrame)
 loadingText.Size = UDim2.new(1, 0, 0.4, 0)
 loadingText.Position = UDim2.new(0, 0, 0.6, 0)
-loadingText.Text = "Ładowanie... 0/" .. totalToLoad
+loadingText.Text = string.format(trans.loading, 0, totalToLoad)
 loadingText.TextScaled = true
 loadingText.BackgroundTransparency = 1
 loadingText.TextColor3 = Color3.new(0.8, 0.8, 0.8)
@@ -42,7 +55,7 @@ loadingText.TextColor3 = Color3.new(0.8, 0.8, 0.8)
 -- Funkcja aktualizacji ładowania
 local function updateLoading()
     loadedCount = loadedCount + 1
-    loadingText.Text = "Ładowanie... " .. loadedCount .. "/" .. totalToLoad
+    loadingText.Text = string.format(trans.loading, loadedCount, totalToLoad)
     if loadedCount >= totalToLoad then
         wait(1)
         animateGuiInOut(welcomeFrame, false)
@@ -76,12 +89,12 @@ tabsFrame.Position = UDim2.new(0, 0, 0, 0)
 tabsFrame.BackgroundTransparency = 0.4
 tabsFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
 
-local tabNames = {"Player", "Universal", "Games", "Misc"}
+local tabNames = {"Player", "Universal", "Games", "Settings"}
 local tabs = {}
 
 for i, name in ipairs(tabNames) do
     local tabButton = Instance.new("TextButton", tabsFrame)
-    tabButton.Size = UDim2.new(1, 0, 0.15, 0) -- Mniejsze zakładki z odstępem
+    tabButton.Size = UDim2.new(1, 0, 0.2, 0) -- Mniejsze zakładki z odstępem
     tabButton.Position = UDim2.new(0, 0, (i - 1) * 0.2, 0)
     tabButton.Text = name
     tabButton.TextScaled = true
@@ -112,6 +125,7 @@ local speedInput = Instance.new("TextBox", playerTab)
 speedInput.Size = UDim2.new(0.5, 0, 0.1, 0)
 speedInput.Position = UDim2.new(0.25, 0, 0.2, 0)
 speedInput.Text = "Enter Speed"
+speedInput.PlaceholderText = trans.placeholder
 speedInput.TextScaled = true
 speedInput.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
 speedInput.TextColor3 = Color3.new(1, 1, 1)
@@ -131,35 +145,21 @@ speedButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Zakładka Misc
-local miscTab = tabs["Misc"]
-local exitButton = Instance.new("TextButton", miscTab)
-exitButton.Size = UDim2.new(0.5, 0, 0.1, 0)
-exitButton.Position = UDim2.new(0.25, 0, 0.2, 0)
-exitButton.Text = "Exit Script"
-exitButton.TextScaled = true
-exitButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
-exitButton.TextColor3 = Color3.new(1, 1, 1)
+-- Zakładka Settings (lub Misc)
+local settingsTab = tabs["Settings"]
+local keybindText = Instance.new("TextLabel", settingsTab)
+keybindText.Size = UDim2.new(1, 0, 0.1, 0)
+keybindText.Position = UDim2.new(0, 0, 0.1, 0)
+keybindText.Text = string.format(trans.keybind, "K")
+keybindText.TextScaled = true
+keybindText.BackgroundTransparency = 1
+keybindText.TextColor3 = Color3.new(1, 1, 1)
 
-exitButton.MouseButton1Click:Connect(function()
-    mainGui:Destroy()
-    welcomeScreen:Destroy()
-    script:Destroy()
-end)
-
--- Zakładki Universal i Games - placeholder
-for _, name in ipairs({"Universal", "Games"}) do
-    local tab = tabs[name]
-    local label = Instance.new("TextLabel", tab)
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.Text = name .. " content coming soon..."
-    label.TextScaled = true
-    label.BackgroundTransparency = 1
-end
-
--- Keybind (K) do włączania/wyłączania GUI
-UIS.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.K then
-        mainGui.Enabled = not mainGui.Enabled
-    end
-end)
+local keybindInput = Instance.new("TextBox", settingsTab)
+keybindInput.Size = UDim2.new(0.5, 0, 0.1, 0)
+keybindInput.Position = UDim2.new(0.25, 0, 0.3, 0)
+keybindInput.Text = ""
+keybindInput.PlaceholderText = trans.placeholder
+keybindInput.TextScaled = true
+keybindInput.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+keybindInput.TextColor3 = Color3.new(1, 1, 1
