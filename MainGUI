@@ -15,7 +15,8 @@ end
 
 -- Ustawienia języka
 local function getLanguage()
-    local language = player.DataStore:GetAsync("PlayerLanguage") or "en" -- Domyślnie angielski
+    -- Tutaj powinien być kod do pobrania języka gracza
+    local language = "en" -- Domyślnie angielski
     return language
 end
 
@@ -32,7 +33,7 @@ local welcomeScreen = Instance.new("ScreenGui", playerGui)
 local welcomeFrame = Instance.new("Frame", welcomeScreen)
 welcomeFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 welcomeFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-welcomeFrame.Size = UDim2.new(0.4, 0, 0.2, 0) -- Mniejszy rozmiar GUI
+welcomeFrame.Size = UDim2.new(0.4, 0, 0.2, 0)
 welcomeFrame.BackgroundTransparency = 0.3
 welcomeFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
 
@@ -76,7 +77,7 @@ local mainGui = Instance.new("ScreenGui", playerGui)
 mainGui.Enabled = false
 
 local mainFrame = Instance.new("Frame", mainGui)
-mainFrame.Size = UDim2.new(0.4, 0, 0.6, 0) -- Mniejsze GUI
+mainFrame.Size = UDim2.new(0.4, 0, 0.6, 0)
 mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.BackgroundTransparency = 0.2
@@ -94,7 +95,7 @@ local tabs = {}
 
 for i, name in ipairs(tabNames) do
     local tabButton = Instance.new("TextButton", tabsFrame)
-    tabButton.Size = UDim2.new(1, 0, 0.2, 0) -- Mniejsze zakładki z odstępem
+    tabButton.Size = UDim2.new(1, 0, 0.2, 0)
     tabButton.Position = UDim2.new(0, 0, (i - 1) * 0.2, 0)
     tabButton.Text = name
     tabButton.TextScaled = true
@@ -111,7 +112,7 @@ for i, name in ipairs(tabNames) do
     end)
 
     local tabContent = Instance.new("Frame", mainFrame)
-    tabContent.Size = UDim2.new(0.8, 0, 1, 0) -- Zawartość obok zakładek
+    tabContent.Size = UDim2.new(0.8, 0, 1, 0)
     tabContent.Position = UDim2.new(0.2, 0, 0, 0)
     tabContent.BackgroundTransparency = 0.3
     tabContent.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
@@ -124,7 +125,7 @@ local playerTab = tabs["Player"]
 local speedInput = Instance.new("TextBox", playerTab)
 speedInput.Size = UDim2.new(0.5, 0, 0.1, 0)
 speedInput.Position = UDim2.new(0.25, 0, 0.2, 0)
-speedInput.Text = "Enter Speed"
+speedInput.Text = trans.placeholder
 speedInput.PlaceholderText = trans.placeholder
 speedInput.TextScaled = true
 speedInput.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
@@ -145,7 +146,7 @@ speedButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Zakładka Settings (lub Misc)
+-- Zakładka Settings
 local settingsTab = tabs["Settings"]
 local keybindText = Instance.new("TextLabel", settingsTab)
 keybindText.Size = UDim2.new(1, 0, 0.1, 0)
@@ -162,4 +163,19 @@ keybindInput.Text = ""
 keybindInput.PlaceholderText = trans.placeholder
 keybindInput.TextScaled = true
 keybindInput.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
-keybindInput.TextColor3 = Color3.new(1, 1, 1
+keybindInput.TextColor3 = Color3.new(1, 1, 1)
+
+local setKeybindButton = Instance.new("TextButton", settingsTab)
+setKeybindButton.Size = UDim2.new(0.5, 0, 0.1, 0)
+setKeybindButton.Position = UDim2.new(0.25, 0, 0.45, 0)
+setKeybindButton.Text = trans.setKeybind
+setKeybindButton.TextScaled = true
+setKeybindButton.BackgroundColor3 = Color3.new(0.25, 0.25, 0.25)
+setKeybindButton.TextColor3 = Color3.new(1, 1, 1)
+
+setKeybindButton.MouseButton1Click:Connect(function()
+    local newKeybind = keybindInput.Text
+    if newKeybind and #newKeybind > 0 then
+        -- Zapisz nowy keybind w odpowiednim miejscu
+    end
+end)
