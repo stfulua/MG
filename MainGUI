@@ -4,7 +4,7 @@ local playerGui = player:WaitForChild("PlayerGui")
 local UIS = game:GetService("UserInputService")
 
 -- Parametry ładowania (przykład)
-local totalToLoad = 100 -- Ustaw tę wartość na rzeczywistą liczbę zasobów do załadowania
+local totalToLoad = 100
 local loadedCount = 0
 
 -- Funkcja do tworzenia prostych animacji (z dołu do góry)
@@ -18,7 +18,7 @@ local welcomeScreen = Instance.new("ScreenGui", playerGui)
 local welcomeFrame = Instance.new("Frame", welcomeScreen)
 welcomeFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 welcomeFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-welcomeFrame.Size = UDim2.new(0.5, 0, 0.3, 0)
+welcomeFrame.Size = UDim2.new(0.4, 0, 0.2, 0) -- Mniejszy rozmiar GUI
 welcomeFrame.BackgroundTransparency = 0.3
 welcomeFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
 
@@ -44,44 +44,52 @@ local function updateLoading()
     loadedCount = loadedCount + 1
     loadingText.Text = "Ładowanie... " .. loadedCount .. "/" .. totalToLoad
     if loadedCount >= totalToLoad then
-        wait(1) -- Krótkie opóźnienie przed wyłączeniem powitania
+        wait(1)
         animateGuiInOut(welcomeFrame, false)
         wait(0.5)
-        welcomeScreen:Destroy() -- Usunięcie GUI powitalnego
+        welcomeScreen:Destroy()
         mainGui.Enabled = true
-        animateGuiInOut(tabsFrame, true)
+        animateGuiInOut(mainFrame, true)
     end
 end
 
--- Symulacja ładowania (na potrzeby przykładu, tu można dodać rzeczywiste ładowanie zasobów)
 for i = 1, totalToLoad do
-    wait(0.1) -- symulacja czasu ładowania
+    wait(0.1)
     updateLoading()
 end
 
 -- Główne GUI
 local mainGui = Instance.new("ScreenGui", playerGui)
-mainGui.Enabled = false -- Wyłączony na start
+mainGui.Enabled = false
 
-local tabsFrame = Instance.new("Frame", mainGui)
-tabsFrame.Size = UDim2.new(1, 0, 0.1, 0)
+local mainFrame = Instance.new("Frame", mainGui)
+mainFrame.Size = UDim2.new(0.4, 0, 0.6, 0) -- Mniejsze GUI
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.BackgroundTransparency = 0.2
+mainFrame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
+
+-- Tworzenie zakładek po lewej stronie
+local tabsFrame = Instance.new("Frame", mainFrame)
+tabsFrame.Size = UDim2.new(0.2, 0, 1, 0)
 tabsFrame.Position = UDim2.new(0, 0, 0, 0)
-tabsFrame.BackgroundTransparency = 0.5
-tabsFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+tabsFrame.BackgroundTransparency = 0.4
+tabsFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
 
--- Tworzenie przycisków zakładek
 local tabNames = {"Player", "Universal", "Games", "Misc"}
 local tabs = {}
 
 for i, name in ipairs(tabNames) do
     local tabButton = Instance.new("TextButton", tabsFrame)
-    tabButton.Size = UDim2.new(0.25, 0, 1, 0)
-    tabButton.Position = UDim2.new((i - 1) * 0.25, 0, 0, 0)
+    tabButton.Size = UDim2.new(1, 0, 0.15, 0) -- Mniejsze zakładki z odstępem
+    tabButton.Position = UDim2.new(0, 0, (i - 1) * 0.2, 0)
     tabButton.Text = name
     tabButton.TextScaled = true
-    tabButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+    tabButton.BackgroundTransparency = 0.2
+    tabButton.BackgroundColor3 = Color3.new(0.25, 0.25, 0.25)
+    tabButton.BorderSizePixel = 0
+    tabButton.TextColor3 = Color3.new(1, 1, 1)
     tabButton.MouseButton1Click:Connect(function()
-        -- Włączenie odpowiedniej zakładki
         for _, tab in pairs(tabs) do
             tab.Visible = false
         end
@@ -89,31 +97,32 @@ for i, name in ipairs(tabNames) do
         animateGuiInOut(tabs[name], true)
     end)
 
-    -- Tworzenie zawartości zakładek
-    local tabContent = Instance.new("Frame", mainGui)
-    tabContent.Size = UDim2.new(1, 0, 0.9, 0)
-    tabContent.Position = UDim2.new(0, 0, 0.1, 0)
-    tabContent.BackgroundTransparency = 0.5
-    tabContent.BackgroundColor3 = Color3.new(0.4, 0.4, 0.4)
-    tabContent.Visible = false -- Wyłączony na start
+    local tabContent = Instance.new("Frame", mainFrame)
+    tabContent.Size = UDim2.new(0.8, 0, 1, 0) -- Zawartość obok zakładek
+    tabContent.Position = UDim2.new(0.2, 0, 0, 0)
+    tabContent.BackgroundTransparency = 0.3
+    tabContent.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+    tabContent.Visible = false
     tabs[name] = tabContent
 end
 
 -- Zakładka Player
 local playerTab = tabs["Player"]
 local speedInput = Instance.new("TextBox", playerTab)
-speedInput.Size = UDim2.new(0.3, 0, 0.1, 0)
-speedInput.Position = UDim2.new(0.35, 0, 0.2, 0)
+speedInput.Size = UDim2.new(0.5, 0, 0.1, 0)
+speedInput.Position = UDim2.new(0.25, 0, 0.2, 0)
 speedInput.Text = "Enter Speed"
 speedInput.TextScaled = true
-speedInput.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+speedInput.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+speedInput.TextColor3 = Color3.new(1, 1, 1)
 
 local speedButton = Instance.new("TextButton", playerTab)
-speedButton.Size = UDim2.new(0.3, 0, 0.1, 0)
-speedButton.Position = UDim2.new(0.35, 0, 0.35, 0)
+speedButton.Size = UDim2.new(0.5, 0, 0.1, 0)
+speedButton.Position = UDim2.new(0.25, 0, 0.35, 0)
 speedButton.Text = "Set Speed"
 speedButton.TextScaled = true
-speedButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+speedButton.BackgroundColor3 = Color3.new(0.25, 0.25, 0.25)
+speedButton.TextColor3 = Color3.new(1, 1, 1)
 
 speedButton.MouseButton1Click:Connect(function()
     local speed = tonumber(speedInput.Text)
@@ -125,32 +134,32 @@ end)
 -- Zakładka Misc
 local miscTab = tabs["Misc"]
 local exitButton = Instance.new("TextButton", miscTab)
-exitButton.Size = UDim2.new(0.3, 0, 0.1, 0)
-exitButton.Position = UDim2.new(0.35, 0, 0.2, 0)
+exitButton.Size = UDim2.new(0.5, 0, 0.1, 0)
+exitButton.Position = UDim2.new(0.25, 0, 0.2, 0)
 exitButton.Text = "Exit Script"
 exitButton.TextScaled = true
 exitButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
+exitButton.TextColor3 = Color3.new(1, 1, 1)
 
 exitButton.MouseButton1Click:Connect(function()
-    mainGui:Destroy() -- Usunięcie GUI
-    welcomeScreen:Destroy() -- Usunięcie powitalnego ekranu
-    script:Destroy() -- Zatrzymanie skryptu
+    mainGui:Destroy()
+    welcomeScreen:Destroy()
+    script:Destroy()
 end)
 
--- Zakładki Universal i Games - na razie tylko tekst
+-- Zakładki Universal i Games - placeholder
 for _, name in ipairs({"Universal", "Games"}) do
     local tab = tabs[name]
     local label = Instance.new("TextLabel", tab)
     label.Size = UDim2.new(1, 0, 1, 0)
-    label.Position = UDim2.new(0, 0, 0, 0)
     label.Text = name .. " content coming soon..."
     label.TextScaled = true
     label.BackgroundTransparency = 1
 end
 
--- Keybind na otwieranie GUI (domyślnie K)
+-- Keybind (K) do włączania/wyłączania GUI
 UIS.InputBegan:Connect(function(input)
     if input.KeyCode == Enum.KeyCode.K then
-        mainGui.Enabled = not mainGui.Enabled -- Przełączanie GUI
+        mainGui.Enabled = not mainGui.Enabled
     end
 end)
